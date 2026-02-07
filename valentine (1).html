@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ffdee9, #b5fffc);
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .card {
+        background: white;
+        padding: 35px;
+        border-radius: 22px;
+        text-align: center;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+        position: relative;
+        width: 90%;
+        max-width: 420px;
+    }
+
+    .cat {
+        font-size: 60px;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        color: #ff4d6d;
+        margin-bottom: 30px;
+        font-size: 24px;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        height: 100px;
+    }
+
+    button {
+        padding: 14px 36px;
+        font-size: 18px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.1s;
+    }
+
+    button:active {
+        transform: scale(0.95) !important;
+    }
+
+    #yesBtn {
+        background: #ff4d6d;
+        color: white;
+        position: relative;
+        left: auto;
+        transform: none;
+        margin-right: 15px;
+        z-index: 15;
+        pointer-events: auto;
+    }
+
+    #yesBtn:hover {
+        background: #ff3355;
+    }
+
+    #noBtn {
+        background: #d3d3d3;
+        color: #333;
+        position: fixed;
+        z-index: 10;
+        left: 60%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin-left: 15px;
+        pointer-events: none;
+    }
+
+    /* Celebration */
+    .celebration {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 20;
+    }
+
+    .heart {
+        font-size: 90px;
+        animation: beat 1s infinite;
+    }
+
+    .celebration h2 {
+        color: white;
+        font-size: 48px;
+        margin-top: 20px;
+    }
+
+    @keyframes beat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.25); }
+    }
+
+    /* Crackers */
+    .cracker {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: explode 1s linear forwards;
+    }
+
+    @keyframes explode {
+        to {
+            transform: translate(var(--x), var(--y));
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="cat">🐱❓</div>
+    <h1>Will you be my Valentine? 💘</h1>
+    <div class="buttons">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+</div>
+
+<div class="celebration" id="celebration">
+    <div class="heart">❤️</div>
+    <h2>Love you 💕</h2>
+</div>
+
+<!-- Sounds -->
+<audio id="tapSound" preload="auto">
+    <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
+</audio>
+
+<audio id="celebrateSound" preload="auto">
+    <source src="https://www.soundjay.com/human/sounds/applause-8.mp3">
+</audio>
+
+<script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const celebration = document.getElementById("celebration");
+    const tapSound = document.getElementById("tapSound");
+    const celebrateSound = document.getElementById("celebrateSound");
+
+    function playTap() {
+        tapSound.currentTime = 0;
+        tapSound.play().catch(() => {}); // Ignore if sound fails
+    }
+
+    function moveNoButton(x, y) {
+        const padding = 40;
+        const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+        const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+        const newX = Math.min(Math.max(x, padding), maxX);
+        const newY = Math.min(Math.max(y, padding), maxY);
+
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
+        noBtn.style.transform = "translate(0, 0)";
+    }
+
+    // Desktop hover
+    document.addEventListener("mousemove", (e) => {
+        const rect = noBtn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < 120) {
+            moveNoButton(
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerHeight
+            );
+        }
+    });
+
+    // Function to make No button jump multiple times
+    function jumpMultipleTimes(times) {
+        let count = 0;
+        const interval = setInterval(() => {
+            if (count >= times) {
+                clearInterval(interval);
+                return;
+            }
+            moveNoButton(
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerHeight
+            );
+            count++;
+        }, 150);
+    }
+
+    // Desktop hover - No button moves away
+    document.addEventListener("mousemove", (e) => {
+        const rect = noBtn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < 120) {
+            moveNoButton(
+                Math.random() * window.innerWidth,
+                Math.random() * window.innerHeight
+            );
+        }
+    });
+
+    // On mobile, No button just moves around randomly every few seconds
+    let mobileInterval;
+    function startMobileMovement() {
+        // Check if it's a touch device
+        if ('ontouchstart' in window) {
+            mobileInterval = setInterval(() => {
+                moveNoButton(
+                    Math.random() * window.innerWidth,
+                    Math.random() * window.innerHeight
+                );
+            }, 2000);
+        }
+    }
+    startMobileMovement();
+
+    // YES button - works on both mobile and desktop
+    function handleYesClick() {
+        playTap();
+        celebration.style.display = "flex";
+        celebrateSound.play().catch(() => {});
+        createCrackers();
+        // Stop No button movement
+        if (mobileInterval) clearInterval(mobileInterval);
+    }
+
+    yesBtn.addEventListener("click", handleYesClick);
+    yesBtn.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        handleYesClick();
+    });
+
+    function createCrackers() {
+        for (let i = 0; i < 150; i++) {
+            const c = document.createElement("div");
+            c.className = "cracker";
+            c.style.left = "50%";
+            c.style.top = "50%";
+            c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+            c.style.setProperty("--x", `${(Math.random()-0.5)*700}px`);
+            c.style.setProperty("--y", `${(Math.random()-0.5)*700}px`);
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 1000);
+        }
+    }
+</script>
+
+</body>
+</html>
